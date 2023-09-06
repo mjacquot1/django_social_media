@@ -17,5 +17,5 @@ def debug_task(self):
 @app.task
 def divide(x, y):
     import time
-    time.sleep(5)
+    time.sleep(3)
     return x / y
