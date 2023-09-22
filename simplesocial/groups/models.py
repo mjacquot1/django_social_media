@@ -1,6 +1,7 @@
 from django import template
 from django.db import models
 from django.utils.text import slugify
+from django.urls import reverse
 
 
 # Create your models here.
@@ -17,9 +18,9 @@ class Group(models.Model):
     name = models.CharField(max_length=255, unique=True)
     slug = models.SlugField(allow_unicode=True, unique=True)
     description = models.TextField(blank=True, default='')
-    description__html = models.TextField(
+    description_html = models.TextField(
         editable=False, default='', blank=True)
-    members = models.ManyToManyField(User, Through='GroupMember')
+    members = models.ManyToManyField(User, through='GroupMember')
 
     def __str__(self):
         return self.name
@@ -29,16 +30,18 @@ class Group(models.Model):
         self.description_html = misaka.html(self.description)
         super().save(*args, **kwargs)
 
-        def get_absolute_url(self):
-            return reverse('groups:single', kwarfs={'slug': self.slug})
+    def get_absolute_url(self):
+        return reverse('groups:single', kwargs={'slug': self.slug})
 
-        class Meta:
-            ordering = ['name']
+    class Meta:
+        ordering = ['name']
 
 
 class GroupMember(models.Model):
-    group = models.ForeinKey(Group, related_name='memberships')
-    user = models.ForeignKey(User, related_name='user_groups')
+    group = models.ForeignKey(
+        Group, related_name='memberships', on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(
+        User, related_name='user_groups', on_delete=models.DO_NOTHING)
 
     def __str__(self):
         return self.user.username

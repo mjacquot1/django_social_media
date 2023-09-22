@@ -4,10 +4,12 @@ from django.contrib import messages
 # Create your views here.
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.views import generic
 from django.shortcuts import get_object_or_404
-from groups.Models import Group, GroupMember
+from groups.models import Group, GroupMember
+
+from . import models
 
 
 class CreateGroup(LoginRequiredMixin, generic.CreateView):
@@ -56,6 +58,6 @@ class LeaveGroup(LoginRequiredMixin, generic.RedirectView):
             messages.warning(self.request, 'Sorry you are not in this group!')
         else:
             membership.delete()
-            messages.sucess(self.request, 'You have left the group!')
+            messages.success(self.request, 'You have left the group!')
 
         return super().get(request, *args, **kwargs)
